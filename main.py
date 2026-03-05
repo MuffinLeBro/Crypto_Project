@@ -1,6 +1,6 @@
+from Server import Server
+from Client import Client
+
 def main():
-    print("Hello from cryptoproject!")
-
-
-if __name__ == "__main__":
-    main()
+    print("[Starting] server is starting...")
+    Server.start()
