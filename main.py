@@ -1,8 +1,9 @@
-from Server import Server
 from Client import Client
-
+ADDRSERVER = "vlbelintrocrypto.hevs.ch"
+PORT = 6000
 def main():
-    pass
+   client = Client()
+   client.connect(ADDRSERVER, PORT)
 
 if __name__ == "__main__":
         main()

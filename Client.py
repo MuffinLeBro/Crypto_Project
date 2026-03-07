@@ -1,5 +1,5 @@
 import socket
-ADDRSERVER : "vlbelintrocrypto.hevs.ch"
+ADDRSERVER = "vlbelintrocrypto.hevs.ch"
 PORT = 6000
 class Client :
     def __init__(self,):
