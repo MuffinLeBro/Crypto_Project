@@ -5,6 +5,7 @@ def main():
    client = Client()
    client.connect(ADDRSERVER, PORT)
    messagae="Je suis etudient a la heso"
+   print("Message to send: ", messagae)
    client.send(messagae)
 if __name__ == "__main__":
         main()
