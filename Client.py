@@ -26,13 +26,15 @@ class Client :
 
     def receive(self):
         try:
-            while self.running:
-                data = self.sock.recv(4096)
-                if not data:
-                    break
-                print("Message reçu : ", data.decode('utf-8'))
+            data = self.sock.recv(4096)
+            
+            if data:
+                return data
+            return None
+            
         except Exception as e:
             print("Erreur lors de la reception : ", e)
+            return None
 
     def start_receiving(self):
                tread = threading.Thread(target=self.receive, daemon=True)
