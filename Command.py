@@ -2,7 +2,7 @@ class Command:
     def encode_shift(self, message, shift):
         result = ''
         for letter in message:
-            new_code = (ord(letter)-32 + shift) % 1114112
+            new_code = (ord(letter) + shift)
             result += chr(new_code)
         return result
 
