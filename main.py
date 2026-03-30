@@ -1,13 +1,20 @@
-
+import PyQt6
+import sys
+from PyQt6 import QtWidgets, uic
+from PyQt6.QtWidgets import QPushButton, QMainWindow, QTextEdit, QLabel, QCheckBox, QPlainTextEdit, QTextBrowser
+from MainWindow import MainWindow
 from Client import Client
 from MessageHandler import MessageHandler
 from Command import Command 
-import time
+
 
 ADDRSERVER = "vlbelintrocrypto.hevs.ch"
 PORT = 6000
 
 def main():
+    app = QtWidgets.QApplication(sys.argv)
+    window = MainWindow()
+    window.show()
     client = Client()
     client.connect(ADDRSERVER, PORT)
     
