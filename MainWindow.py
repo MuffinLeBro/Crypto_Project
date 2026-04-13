@@ -1,11 +1,13 @@
 import PyQt6
+import os
 from PyQt6 import QtWidgets, uic
 from PyQt6.QtWidgets import QPushButton, QMainWindow, QTextEdit, QLabel, QCheckBox, QPlainTextEdit, QTextBrowser
 class MainWindow (QMainWindow):
     def __init__(self):
         super().__init__()
 
-        uic.load_ui('CryptoInterface.ui', self)
+        ui_path = os.path.dirname(os.path.abspath(__file__))
+        uic.loadUi(os.path.join(ui_path, "CryptoInterface.ui"), self)
         #Init Button
         self.btnRSA = self.findChild(QPushButton, 'btnRSA')
         self.btnDifHel = self.findChild(QPushButton, 'btnDiffieHellman')
@@ -27,6 +29,8 @@ class MainWindow (QMainWindow):
 
         #Init Label
         self.lblKeyDisplay = self.findChild(QLabel, 'lblKeyDisplay')
+
+
 
 
 
