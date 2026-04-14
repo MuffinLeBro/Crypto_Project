@@ -1,3 +1,4 @@
+import os
 
 BANNER = """
 ================================================
@@ -15,6 +16,8 @@ BANNER = """
 /select <i> [e|c]           - Select message for encoded/plain buffer
 /encode shift <k>           - Encode plain buffer with shift
 /decode shift <k>           - Decode encoded buffer with shift
+
+/decode isc [hex_message]   - Decode ISC frame from hex or encoded buffer
 /encode vigenere <key>
 /decode vigenere <key>
 /encode rsa <pub> <mod>
@@ -40,6 +43,7 @@ class CLI:
         self.plain_buffer = ""
         self.encoded_buffer = ""  # str for shift/vigenere, list[int] for RSA
         self.messages = []  # list of (direction, msg_type, text)
+        self.last_decoded_isc = None
 
     def show_banner(self):
         print(BANNER)
@@ -47,15 +51,26 @@ class CLI:
         print("Type /help to see available commands.\n")
 
     def on_message_received(self, raw_data):
-        msg_type, text = self.handler.decode_message(raw_data)
-        if text is not None:
-            self.messages.append(("recv", msg_type, text))
-            print(f"\n[Serveur] ({msg_type}): {text}")
+        try:
+            decoded_message = self.handler.parse_message(raw_data)
+        except (TypeError, ValueError, UnicodeDecodeError) as exc:
+            print(f"\n[Serveur] Trame ISC invalide: {exc}")
             print("> ", end="", flush=True)
+            return
+
+        self.last_decoded_isc = decoded_message
+        self.messages.append(("recv", decoded_message.msg_type, decoded_message.text))
+        print(f"\n[Serveur] ({decoded_message.msg_type}): {decoded_message.text}")
+        print("> ", end="", flush=True)
 
     def send_to_server(self, msg_type, text, silent=False):
-        self.handler.add_data(msg_type, text)
-        self.client.send(self.handler.get_message())
+        try:
+            payload = self.handler.build_message(msg_type, text)
+        except (TypeError, ValueError) as exc:
+            print(f"Impossible d'encoder la trame ISC: {exc}")
+            return
+
+        self.client.send(payload)
         self.messages.append(("sent", msg_type, text))
         if not silent:
             print(f"Message envoyé: {text}")
@@ -302,10 +317,13 @@ class CLI:
 
     def _cmd_decode(self, args):
         if not args:
-            print("Usage: /decode shift <k> | /decode vigenere <key> | /decode rsa <priv> <mod>")
+            print("Usage: /decode shift <k> | /decode isc [hex_message] | /decode vigenere <key> | /decode rsa <priv> <mod>")
             return
         method = args[0].lower()
-        if method == "shift":
+        if method == "isc":
+            self._cmd_decode_isc(args[1:])
+
+        elif method == "shift":
             if len(args) < 2:
                 print("Usage: /decode shift <k>")
                 return
@@ -351,7 +369,34 @@ class CLI:
             print(f"Plain buffer = \"{self.plain_buffer}\"")
 
         else:
-            print("Méthode inconnue. Utilisez: shift, vigenere, rsa")
+            print("Méthode inconnue. Utilisez: isc, shift, vigenere, rsa")
+
+    def _cmd_decode_isc(self, args):
+        if args:
+            raw_hex_message = " ".join(args)
+            self.encoded_buffer = raw_hex_message
+        else:
+            if not self.encoded_buffer:
+                print("Usage: /decode isc [hex_message]")
+                return
+            if isinstance(self.encoded_buffer, list):
+                print("Encoded buffer n'est pas une trame ISC hexadecimale.")
+                return
+            raw_hex_message = self.encoded_buffer
+
+        try:
+            decoded_message = self.handler.parse_hex_message(raw_hex_message)
+        except (TypeError, ValueError, UnicodeDecodeError) as exc:
+            print(f"Impossible de decoder la trame ISC: {exc}")
+            return
+
+        self.last_decoded_isc = decoded_message
+        self.plain_buffer = decoded_message.text
+        print("Message ISC decode:")
+        print(f"  Type     : {decoded_message.msg_type}")
+        print(f"  Longueur : {decoded_message.char_count}")
+        print(f"  Texte    : {decoded_message.text}")
+        print(f"Plain buffer = \"{self.plain_buffer}\"")
 
     # --- RSA ---
 
