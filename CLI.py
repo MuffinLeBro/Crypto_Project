@@ -427,3 +427,7 @@ class CLI:
 
         else:
             print("Usage: /dh generate | /dh halfkey | /dh secret")
+#resolution probleme cli 
+if __name__ == "__main__":
+    cli = CLI()
+    cli.run()
