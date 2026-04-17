@@ -3,6 +3,10 @@
 ## Documentation supplementaire
 
 - [README_CLI.md](README_CLI.md) : detail technique sur l'implementation de la CLI
+- [README_COMMANDES_CLI.md](README_COMMANDES_CLI.md) : guide pratique des commandes CLI avec exemples de test
+- [README_DIFFIE_HELLMAN.md](README_DIFFIE_HELLMAN.md) : detail technique sur l'implementation de la feature Diffie-Hellman
+- [README_HASH.md](README_HASH.md) : detail technique sur l'implementation de la feature Hash
+- [README_VIGENERE.md](README_VIGENERE.md) : detail technique sur l'implementation de la feature Vigenere
 
 ## Feature ajoutee : decoder les messages ISC
 

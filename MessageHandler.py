@@ -15,10 +15,18 @@ class MessageHandler:
         self.bytesPerChar = bytesPerChar
         self.binaryMessage = b''
 
+    def _format_hex_prefix(self, raw_bytes, length):
+        prefix = raw_bytes[:length].hex().upper()
+        return prefix or "(vide)"
+
     def _read_header(self, raw_bytes):
         header = raw_bytes[0:3]
         if header != self.header:
-            raise ValueError("En-tete ISC invalide.")
+            raise ValueError(
+                "En-tete ISC invalide: "
+                f"attendu {self.header.hex().upper()} ('ISC') au debut de la trame, "
+                f"recu {self._format_hex_prefix(raw_bytes, 3)}."
+            )
         return header
 
     def _read_type(self, raw_bytes):

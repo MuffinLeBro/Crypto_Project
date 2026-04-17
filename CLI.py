@@ -293,7 +293,11 @@ class CLI:
             if not self.plain_buffer:
                 print("Plain buffer est vide. Utilisez /set plain <text>")
                 return
-            self.encoded_buffer = self.cmd.encode_vigenere(self.plain_buffer, key)
+            try:
+                self.encoded_buffer = self.cmd.encode_vigenere(self.plain_buffer, key)
+            except ValueError as exc:
+                print(exc)
+                return
             print(f"Encoded buffer = \"{self.encoded_buffer}\"")
 
         elif method == "rsa":
@@ -346,7 +350,11 @@ class CLI:
             if not self.encoded_buffer:
                 print("Encoded buffer est vide.")
                 return
-            self.plain_buffer = self.cmd.decode_vigenere(self.encoded_buffer, key)
+            try:
+                self.plain_buffer = self.cmd.decode_vigenere(self.encoded_buffer, key)
+            except ValueError as exc:
+                print(exc)
+                return
             print(f"Plain buffer = \"{self.plain_buffer}\"")
 
         elif method == "rsa":
@@ -388,6 +396,10 @@ class CLI:
             decoded_message = self.handler.parse_hex_message(raw_hex_message)
         except (TypeError, ValueError, UnicodeDecodeError) as exc:
             print(f"Impossible de decoder la trame ISC: {exc}")
+            if str(exc).startswith("En-tete ISC invalide"):
+                example_hex_message = self.handler.build_message("s", "Hi").hex().upper()
+                print(f"Exemple de trame ISC valide : {example_hex_message}")
+                print(f"Exemple de commande         : /decode isc {example_hex_message}")
             return
 
         self.last_decoded_isc = decoded_message

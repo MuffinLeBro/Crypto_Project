@@ -3,6 +3,22 @@ import random
 
 
 class Command:
+    def _normalize_vigenere_key(self, key):
+        normalized_key = [char.upper() for char in key if char.isalpha()]
+        if not normalized_key:
+            raise ValueError("La cle Vigenere doit contenir au moins une lettre.")
+        return normalized_key
+
+    def _transform_vigenere_char(self, char, key_char, direction):
+        if not char.isalpha():
+            return char
+
+        alphabet_start = ord('A') if char.isupper() else ord('a')
+        char_offset = ord(char) - alphabet_start
+        key_offset = ord(key_char) - ord('A')
+        transformed_offset = (char_offset + (direction * key_offset)) % 26
+        return chr(alphabet_start + transformed_offset)
+
     def encode_shift(self, message, shift):
         result = ''
         for letter in message:
@@ -25,19 +41,29 @@ class Command:
         return bytes(result)
 
     def encode_vigenere(self, message, key):
+        normalized_key = self._normalize_vigenere_key(key)
         result = ''
-        for i, char in enumerate(message):
-            key_char = key[i % len(key)]
-            new_code = (ord(char) + ord(key_char))
-            result += chr(new_code)
+        key_index = 0
+        for char in message:
+            if char.isalpha():
+                key_char = normalized_key[key_index % len(normalized_key)]
+                result += self._transform_vigenere_char(char, key_char, 1)
+                key_index += 1
+            else:
+                result += char
         return result
 
     def decode_vigenere(self, message, key):
+        normalized_key = self._normalize_vigenere_key(key)
         result = ''
-        for i, char in enumerate(message):
-            key_char = key[i % len(key)]
-            new_code = (ord(char) - ord(key_char))
-            result += chr(new_code)
+        key_index = 0
+        for char in message:
+            if char.isalpha():
+                key_char = normalized_key[key_index % len(normalized_key)]
+                result += self._transform_vigenere_char(char, key_char, -1)
+                key_index += 1
+            else:
+                result += char
         return result
 
     # --- RSA ---
