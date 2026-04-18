@@ -74,7 +74,7 @@ class Command:
         return -1
 
     def rsa_generate(self, p=23, q=37, e=17):
-        """Generate RSA key pair. Returns (e, d, n)."""
+        """Générer une paire de clés RSA. Renvoie (e, d, n)."""
         n = p * q
         phi = (p - 1) * (q - 1)
         d = self._find_private_key_d(e, phi)
