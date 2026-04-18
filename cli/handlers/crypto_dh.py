@@ -1,6 +1,9 @@
+from DiffieHellman import DiffieHellman
+
+
 class DhCmds:
-    def __init__(self, cmd):
-        self._cmd = cmd
+    def __init__(self, cmd=None):
+        self._dh = DiffieHellman()
 
     def cmd_dh(self, args):
         if not args:
@@ -16,7 +19,7 @@ class DhCmds:
                 except ValueError:
                     print("max_mod doit être un entier.")
                     return
-            p, g = self._cmd.dh_generate(max_mod)
+            p, g = self._dh.generate(max_mod)
             print(f"DH Parameters:")
             print(f"  Modulus (p) = {p}")
             print(f"  Generator (g) = {g}")
@@ -32,7 +35,7 @@ class DhCmds:
             except ValueError:
                 print("Les paramètres doivent être des entiers.")
                 return
-            half_key, priv_a = self._cmd.dh_halfkey(mod, gen, priv_a)
+            half_key, priv_a = self._dh.halfkey(mod, gen, priv_a)
             print(f"DH Half Key:")
             print(f"  A (half key) = {half_key}")
             print(f"  a (private)  = {priv_a}")
@@ -49,7 +52,7 @@ class DhCmds:
             except ValueError:
                 print("Les paramètres doivent être des entiers.")
                 return
-            secret = self._cmd.dh_secret(mod, gen, priv_a, gB)
+            secret = self._dh.secret(mod, gen, priv_a, gB)
             print(f"DH Shared Secret = {secret}")
 
         else:

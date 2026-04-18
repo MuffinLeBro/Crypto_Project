@@ -11,6 +11,7 @@ from cli.handlers.buffer_cmds import BufferCommands
 from cli.handlers.crypto_cmds import CryptoCmds
 from cli.handlers.crypto_rsa import RsaCmds
 from cli.handlers.crypto_dh import DhCmds
+from cli.handlers.crypto_hash import HashCmds
 from cli.handlers.misc_cmds import MiscCmds
 
 
@@ -27,6 +28,7 @@ class CLI:
         self._crypto = CryptoCmds(self.cmd, self.buffers, self.handler)
         self._rsa    = RsaCmds(self.cmd)
         self._dh     = DhCmds(self.cmd)
+        self._hash   = HashCmds(self.cmd, self.buffers)
         self._misc   = MiscCmds(self.client, self.cmd, self.buffers, self.history, self.send_to_server)
 
     def show_banner(self):
@@ -133,7 +135,7 @@ class CLI:
             self._rsa.cmd_rsa(args)
 
         elif command == "/hash":
-            self._misc.cmd_hash()
+            self._hash.cmd_hash()
 
         elif command == "/dh":
             self._dh.cmd_dh(args)

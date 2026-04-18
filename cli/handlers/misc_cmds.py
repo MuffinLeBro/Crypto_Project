@@ -26,12 +26,6 @@ class MiscCmds:
         else:
             self._send("s", " ".join(send_args), silent)
 
-    def cmd_hash(self):
-        if not self._buffers.plain:
-            print("Plain buffer est vide. Utilisez /set plain <text>")
-            return
-        print(f"SHA-256: {self._cmd.sha256(self._buffers.plain)}")
-
     def cmd_health(self):
         if self._client.health():
             print("Connexion au serveur : OK")
