@@ -1,3 +1,6 @@
+from Command import Command
+from Client import Client
+from MessageHandler import MessageHandler
 
 BANNER = """
 ================================================
@@ -27,9 +30,7 @@ BANNER = """
 <text>                      - Send clear message to other clients
 ================================================
 """
-from Command import Command
-from Client import Client
-from MessageHandler import MessageHandler
+
 ADDRSERVER = "vlbelintrocrypto.hevs.ch"
 PORT = 6000
 class CLI:

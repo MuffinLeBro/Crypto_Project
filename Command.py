@@ -1,6 +1,5 @@
 import hashlib
 
-
 class Command:
     def _normalize_vigenere_key(self, key):
         normalized_key = [char.upper() for char in key if char.isalpha()]
@@ -97,7 +96,7 @@ class Command:
             letter = chr(decrypted_number)
             decrypted_word += letter
         return decrypted_word
-
+    
     # --- Hash ---
 
     def sha256(self, message):

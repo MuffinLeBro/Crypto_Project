@@ -26,6 +26,7 @@ class Client:
             if isinstance(message, str):
                 message = message.encode('utf-8')
             self.sock.sendall(message)
+            print(f"Message envoyé : {message}") #TODO : remove
         except Exception as e:
             print("Erreur lors de l'envoi :", e)
 
@@ -33,6 +34,7 @@ class Client:
         try:
             data = self.sock.recv(4096)
             if data:
+                print(f"Message reçu : {data}") #TODO : remove
                 return data
             return None
         except Exception as e:
