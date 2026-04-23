@@ -1,6 +1,4 @@
 import random
-
-
 class DiffieHellman:
     def _is_prime(self, n):
         if n < 2:

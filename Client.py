@@ -32,7 +32,14 @@ class Client:
 
     def receive(self):
         try:
-            data = self.sock.recv(4096)
+            header = self.sock.recv(3)
+
+            if header != b"ISC":
+                return
+            
+            type = self.sock.recv(1)
+            length = int.from_bytes(self.sock.recv(2))
+            data = self.sock.recv(length * 4)
             if data:
                 print(f"Message reçu : {data}") #TODO : remove
                 return data
