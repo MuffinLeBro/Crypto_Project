@@ -26,12 +26,20 @@ class Client:
             if isinstance(message, str):
                 message = message.encode('utf-8')
             self.sock.sendall(message)
+            print(f"Message envoyé : {message}") #TODO : remove
         except Exception as e:
             print("Erreur lors de l'envoi :", e)
 
     def receive(self):
         try:
-            data = self.sock.recv(4096)
+            header = self.sock.recv(3)
+
+            if header != b"ISC":
+                return
+            
+            type = self.sock.recv(1)
+            length = int.from_bytes(self.sock.recv(2))
+            data = self.sock.recv(length * 4)
             if data:
                 return data
             return None

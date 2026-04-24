@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>964</width>
-    <height>780</height>
+    <height>404</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,7 +20,7 @@
       <x>410</x>
       <y>0</y>
       <width>551</width>
-      <height>401</height>
+      <height>371</height>
      </rect>
     </property>
     <property name="title">
@@ -145,7 +145,7 @@
     <widget class="QPushButton" name="btnKeyFind">
      <property name="geometry">
       <rect>
-       <x>230</x>
+       <x>190</x>
        <y>300</y>
        <width>111</width>
        <height>28</height>
@@ -158,7 +158,7 @@
     <widget class="QPushButton" name="btnDecode">
      <property name="geometry">
       <rect>
-       <x>340</x>
+       <x>300</x>
        <y>300</y>
        <width>111</width>
        <height>28</height>
@@ -171,7 +171,7 @@
     <widget class="QPushButton" name="btnEncode">
      <property name="geometry">
       <rect>
-       <x>120</x>
+       <x>80</x>
        <y>300</y>
        <width>111</width>
        <height>28</height>
@@ -181,11 +181,24 @@
       <string>Encode</string>
      </property>
     </widget>
+     <widget class="QPushButton" name="btnHelp">
+     <property name="geometry">
+      <rect>
+       <x>410</x>
+       <y>300</y>
+       <width>111</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Help</string>
+     </property>
+    </widget>
     <widget class="QPlainTextEdit" name="txtSolution">
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>360</y>
+       <y>340</y>
        <width>551</width>
        <height>31</height>
       </rect>
@@ -198,7 +211,7 @@
       <x>0</x>
       <y>0</y>
       <width>411</width>
-      <height>391</height>
+      <height>371</height>
      </rect>
     </property>
    </widget>

@@ -1,6 +1,5 @@
 import hashlib
 
-
 class Command:
     def _normalize_vigenere_key(self, key):
         normalized_key = [char.upper() for char in key if char.isalpha()]
@@ -9,14 +8,7 @@ class Command:
         return normalized_key
 
     def _transform_vigenere_char(self, char, key_char, direction):
-        if not char.isalpha():
-            return char
-
-        alphabet_start = ord('A') if char.isupper() else ord('a')
-        char_offset = ord(char) - alphabet_start
-        key_offset = ord(key_char) - ord('A')
-        transformed_offset = (char_offset + (direction * key_offset)) % 26
-        return chr(alphabet_start + transformed_offset)
+        return chr(ord(char) + (direction * ord(key_char)))
 
     def encode_shift(self, message, shift):
         result = ''
@@ -40,31 +32,14 @@ class Command:
         return bytes(result)
 
     def encode_vigenere(self, message, key):
-        normalized_key = self._normalize_vigenere_key(key)
         result = ''
         key_index = 0
         for char in message:
-            if char.isalpha():
-                key_char = normalized_key[key_index % len(normalized_key)]
-                result += self._transform_vigenere_char(char, key_char, 1)
-                key_index += 1
-            else:
-                result += char
+            key_char = key[key_index % len(key)]
+            result += self._transform_vigenere_char(char, key_char, 1)
+            key_index += 1
         return result
-
-    def decode_vigenere(self, message, key):
-        normalized_key = self._normalize_vigenere_key(key)
-        result = ''
-        key_index = 0
-        for char in message:
-            if char.isalpha():
-                key_char = normalized_key[key_index % len(normalized_key)]
-                result += self._transform_vigenere_char(char, key_char, -1)
-                key_index += 1
-            else:
-                result += char
-        return result
-
+    
     # --- RSA ---
 
     def _find_private_key_d(self, e, phi):
@@ -82,12 +57,12 @@ class Command:
 
     def encode_rsa(self, message, pub, mod):
         """Encode each character with RSA: c = m^pub mod n. Returns list of ints."""
-        encrypted_list = []
+        encrypted_list = bytearray()
         for letter in message:
             number_version = ord(letter)
             encrypted_number = pow(number_version, pub, mod)
-            encrypted_list.append(encrypted_number)
-        return encrypted_list
+            encrypted_list.extend(encrypted_number.to_bytes(4, byteorder="big"))
+        return bytes(encrypted_list)
 
     def decode_rsa(self, encrypted_list, priv, mod):
         """Decode list of ints with RSA: m = c^priv mod n. Returns string."""
@@ -97,7 +72,7 @@ class Command:
             letter = chr(decrypted_number)
             decrypted_word += letter
         return decrypted_word
-
+    
     # --- Hash ---
 
     def sha256(self, message):

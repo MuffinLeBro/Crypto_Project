@@ -64,15 +64,7 @@ class MessageHandler:
 
         nChar = len(text)
         lengthByte = struct.pack('>H', nChar)
-
-        bodyBytes = b""
-        for char in text:
-            charEncoded = char.encode('utf-8')
-            if len(charEncoded) > self.bytesPerChar:
-                raise ValueError(
-                    f"Le caractere {char!r} depasse la taille ISC de {self.bytesPerChar} octets."
-                )
-            bodyBytes += charEncoded.rjust(self.bytesPerChar, b'\x00')
+        bodyBytes = text.encode("utf-32-be")
 
         return self.header + typeByte + lengthByte + bodyBytes
 
