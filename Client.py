@@ -41,7 +41,6 @@ class Client:
             length = int.from_bytes(self.sock.recv(2))
             data = self.sock.recv(length * 4)
             if data:
-                print(f"Message reçu : {data}") #TODO : remove
                 return data
             return None
         except Exception as e:

@@ -31,7 +31,8 @@ class MainWindow (QMainWindow):
         self.btnKeyFind = self.findChild(QPushButton, 'btnKeyFind')
         self.btnEncode = self.findChild(QPushButton, 'btnEncode')
         self.btnSendServer = self.findChild(QPushButton, 'btnSendServer')
-        self.btnClea = self.findChild(QPushButton, 'btnClear')
+        self.btnSendSecret  =self.findChild(QPushButton, 'btnSendSharedSecret')
+        self.btnClear = self.findChild(QPushButton, 'btnClear')
 
         #Init TextBox
         self.txtMessage = self.findChild(QPlainTextEdit, 'txtMessage')
@@ -41,7 +42,10 @@ class MainWindow (QMainWindow):
         self.txtSolution = self.findChild(QPlainTextEdit, 'txtSolution')
         self.txtServerBox = self.findChild(QPlainTextEdit, 'txtServerBox')
         self.txtModulo = self.findChild(QPlainTextEdit, 'txtModulo')
-        self.txtLog = self.findChild(QTextBrowser, 'txtLog')
+        self.txtMyHalfKey = self.findChild(QPlainTextEdit, 'txtMyHalfKey')
+        self.txtServerHalfKey = self.findChild(QPlainTextEdit, 'txtServerHalfKey')
+        self.txtSharedSecret = self.findChild(QPlainTextEdit, 'txtSharedSecret')
+
     
         #Inite Check Box
         self.cbServerOnly = self.findChild(QCheckBox, 'cbServerOnly')
@@ -57,10 +61,14 @@ class MainWindow (QMainWindow):
         self.btnHashing.clicked.connect(self.btnHashing_Clicked)
         self.btnSendServer.clicked.connect(self.btnSendServer_Clicked)
         self.btnClear.clicked.connect(self.btnClear_Clicked)
+        self.btnDecode.clicked.connect(self.btnDecode_Clicked)
+        self.btnSendSecret.clicked.connect(self.btnSendSecret_clicked)
+
 
     def on_message_received(self, message):
         self.txtServerBox.appendPlainText(message.decode("utf-32-be") + "\n\n")
-  
+
+
     def btnShift_Clicked(self):
         msg = self.txtMessage.toPlainText()
         key = self.txtKey.toPlainText()
@@ -71,32 +79,58 @@ class MainWindow (QMainWindow):
         else :
             self.txtSolution.setPlainText("La clé doit être un nombre")
 
+
     def btnVigenere_Clicked(self):
         msg = self.txtMessage.toPlainText()
         key = self.txtKey.toPlainText()
         res = self.crypto.encode_vigenere(msg, key)
         self.txtSolution.setPlainText(res)
         self.client.send(self.handler.build_message('s', res))
-        
+
+
     def btnRsa_Clicked(self):
         msg = self.txtMessage.toPlainText()
         publicKey = self.txtPublicKey.toPlainText()
         modulo = self.txtModulo.toPlainText()
         if publicKey.isdigit and modulo.isdigit:
             numList = self.crypto.encode_rsa(msg, int(publicKey), int(modulo))
-            self.txtSolution.setPlainText(str(numList))
+            self.txtSolution.setPlainText(numList.decode("utf-32-be", errors = "replace"))
             self.client.send(b"ISC" + b"s" + int.to_bytes((len(numList) // 4), length=2) + numList)
         else:
             self.txtLog.toPlainText("La clé privée ou la clé publique doit être un entier")
-        
+
+
     def btnDifHel_Clicked(self): 
-        p, g = self.dh.generate(max_mod=1000)
-        A, self.priv_a = self.dh.halfkey(p, g)
-        result_text = f"p: {p}, g: {g}, Public A: {A}"
-        self.txtSolution.setPlainText(result_text)
-        payload = f"{p},{g},{A}"
-        res = self.handler.build_message('d', payload)
-        self.client.send(res)
+        # envoi du generator et du modulo
+        params = self.txtMessage.toPlainText()
+        parts = params.split(",")
+        modularWord = int(parts[0])
+        generator = int(parts[1])
+        self.client.send(self.handler.build_message('s', params))
+
+        # calcul de la haflkey
+        halfKey, privateNumber = self.dh.halfkey(modularWord,generator)
+        self.txtMyHalfKey.setPlainText(str(halfKey))
+        self.client.send(self.handler.build_message('s', str(halfKey)))
+
+    def btnSendSecret_clicked(self):
+        # recuperation de la halfkey du serveur
+         # envoi du generator et du modulo
+        params = self.txtMessage.toPlainText()
+        parts = params.split(",")
+        modularWord = int(parts[0])
+        generator = int(parts[1])
+
+        # calcul de la haflkey
+        halfKey, privateNumber = self.dh.halfkey(modularWord,generator)
+
+        serverHalfKey_str = self.txtServerHalfKey.toPlainText()
+        serverHalfKey = int(serverHalfKey_str)
+
+        #Envoi du sharedSecret
+        sharedSecret = self.dh.secret(modularWord, generator, privateNumber, serverHalfKey)
+        self.txtSharedSecret.setPlainText(str(sharedSecret))
+        self.client.send(self.handler.build_message('s', str(sharedSecret)))
 
     def btnHashing_Clicked(self):
         msg = self.txtMessage.toPlainText()
@@ -107,6 +141,7 @@ class MainWindow (QMainWindow):
             self.txtSolution.setPlainText(res)
             self.client.send(self.handler.build_message('s',res))
 
+
     def btnSendServer_Clicked(self) :
         message = self.txtMessage.toPlainText()
         
@@ -115,12 +150,17 @@ class MainWindow (QMainWindow):
             return  
         words = message.split()
 
-        if self.cbServerOnly.isChecked:
-            msg_type = 's'
+        if self.cbServerOnly.isChecked():
+            msgType = 's'
         else: 
-            msg_type = 't'         
+            msgType = 't'         
 
-        self.client.send(self.handler.build_message(msg_type, message))
+        self.client.send(self.handler.build_message(msgType, message))
+
+
+    def btnDecode_Clicked(self):
+      ...           
+
 
     def btnClear_Clicked(self):
         self.txtServerBox.clear()
