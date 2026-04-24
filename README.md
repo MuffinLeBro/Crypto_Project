@@ -1,49 +1,51 @@
 # Crypto Project
 
-Crypto Project est un projet de cryptographie pedagogique ecrit en Python. Le depot combine une CLI connectee a un serveur ISC, une base d'interface graphique PyQt6, et plusieurs modules de chiffrement, de hachage et d'echange de cles.
+Crypto Project est un projet de cryptographie pédagogique écrit en Python. Le repo combine une CLI connectée à un serveur ISC, une base d'interface graphique PyQt6, et plusieurs modules de chiffrement, de hachage et d'échange de clés.
 
-L'objectif du projet est double : manipuler des mecanismes classiques de cryptographie et structurer une application claire autour de trois couches distinctes : algorithmes, protocole de message et interface utilisateur.
+L'objectif du projet est double : manipuler des mecanismes classiques de cryptographie et structurer une application claire autour de trois couches distinctes : algorithmes, protocole de communication et interface utilisateur.
 
 ## Pourquoi ce projet
 
-Ce projet a ete concu comme un projet de cryptographie a vocation academique. Il permet de :
+Ce projet a été concu comme un projet de cryptographie a vocation academique. Il permet de :
 
-- tester plusieurs algorithmes classiques dans un meme environnement ;
-- comprendre le format de trame ISC utilise pour l'encodage et le decodage de messages ;
-- manipuler une CLI a buffers pour chiffrer, dechiffrer, stocker et envoyer des messages ;
-- poser les bases d'une interface graphique en PyQt6.
+- tester plusieurs algorithmes classiques dans un même environnement ;
+- comprendre le format de trame ISC utilisé pour l'encodage et le décodage de messages ;
+- manipuler une CLI à buffers pour chiffrer, dechiffrer, stocker et envoyer des messages ;
+- poser les bases d'une interface graphique avec la librairie PyQt6.
 
-Ce depot est adapte a l'apprentissage, a la demonstration et a l'experimentation. Il n'a pas vocation a etre utilise tel quel comme solution de securite en production.
+Ce repo est adapté à l'apprentissage, à la démonstration et à l'experimentation. Il n'a pas vocation à etre utilisé tel quel comme solution de sécurite dans la réalisté.
 
 ## Fonctionnalites
 
-- chiffrement par decalage ;
+- chiffrement par décalage ;
 - chiffrement et dechiffrement de Vigenere ;
-- generation de cles RSA, chiffrement et dechiffrement RSA ;
+- génération de cles RSA, chiffrement et déchiffrement RSA ;
 - calcul de hachage SHA-256 ;
-- generation de parametres Diffie-Hellman et calcul de cle partagee ;
-- creation et analyse de trames ISC ;
-- client TCP pour echange avec un serveur distant ;
+- génération de parametres Diffie-Hellman et calcul de clés partagées ;
+- création et analyse de trames ISC ;
+- client TCP pour échange avec un serveur distant ;
 - historique des messages, buffers plain/encoded et commandes utilitaires ;
 - prototype d'interface graphique avec PyQt6.
 
 ## Architecture du projet
 
-Le projet est organise autour de composants simples et bien separes :
+Le projet est organisé autour de composants simples et bien séparés :
 
 - [Command.py](Command.py) centralise les operations cryptographiques ;
 - [MessageHandler.py](MessageHandler.py) construit et decode les trames ISC ;
 - [Client.py](Client.py) gere la connexion TCP au serveur ;
-- [CLI.py](CLI.py) sert de point d'entree pour le mode ligne de commande ;
+- [CLI.py](CLI.py) sert de point d'entrée pour le mode ligne de commande ;
 - [main.py](main.py) charge l'interface graphique PyQt6 ;
 - [cli/](cli/) contient le moteur de la CLI, les buffers, l'historique et les handlers de commandes ;
 - [test/test_commands.py](test/test_commands.py) sert de script de demonstration rapide des commandes crypto.
+- [MainWindow.py] contient tous le code de l'interface graphique
+- [DiffieHellman.py] contient tous la génération de l'algorithme de cryptage DiffieHellman
 
 ## Prerequis
 
 - Python 3.12 ou plus recent ;
 - PyQt6 ;
-- acces reseau au serveur si vous utilisez la CLI connectee.
+- accés réseau au serveur
 
 Le serveur configure dans le projet est :
 
@@ -87,7 +89,6 @@ uv run python CLI.py
 La CLI tente de se connecter immediatement au serveur distant. Si le serveur est indisponible, l'application s'arrete apres l'echec de connexion.
 
 ### Mode interface graphique
-
 ```bash
 .venv/bin/python main.py
 ```
@@ -173,18 +174,14 @@ Ce mecanisme permet de construire une trame binaire stable et de la retransforme
 
 ## Etat actuel et limites
 
-- la CLI depend d'un serveur distant pour son execution normale ;
-- l'interface graphique est presente, mais reste encore une base d'integration ;
+- la CLI dépend d'un serveur distant pour son exécution normale ;
+- l'interface graphique présente permet une utilisation plus simple que l'utilisation en CLI. Elle est également la version qu'on doit utiliser pour exécuter le projet.
 - le fichier `test/test_commands.py` ressemble aujourd'hui davantage a un script de verification manuelle qu'a une vraie suite de tests automatisee ;
-- plusieurs algorithmes presents ici sont implementes pour l'apprentissage et la comprehension, pas pour un usage securitaire reel.
+- plusieurs algorithmes présents ici sont implémentés pour l'apprentissage et la compréhension, pas pour un usage sécuritaire réel.
 
-## Pistes d'amelioration
+## Pistes d'amélioration
+- ajouter le décode des différents algorithme qui ne sont pas demandés comme le shift, vigénére
 
-- relier les boutons de l'interface graphique aux operations de `Command.py` ;
-- transformer les verifications manuelles en tests automatises ;
-- ajouter une couche de configuration pour le serveur ;
-- completer la documentation des formats d'entree et de sortie pour chaque commande.
+## Résumé
 
-## Resume
-
-Crypto Project est un projet de cryptographie en Python qui sert a explorer plusieurs techniques classiques, a manipuler un protocole de message ISC et a construire une application organisee autour d'une CLI connectee et d'une interface graphique PyQt6. C'est une base propre pour un projet academique de cryptographie, avec une architecture deja lisible et des extensions naturelles pour aller plus loin.
+Crypto Project est un projet de cryptographie en Python qui sert à explorer plusieurs techniques classiques, à manipuler un protocole de message ISC et à construire une application organisée autour d'une CLI connectée et d'une interface graphique PyQt6. C'est une base propre pour un projet academique de cryptographie, avec une architecture déjà lisible et des extensions naturelles pour aller plus loin.
