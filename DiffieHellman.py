@@ -32,4 +32,4 @@ class DiffieHellman:
 
     def secret(self, modularWord, generator, privateNumber, ServerHalfKey):
         """Compute DH shared secret: s = gB^a mod p."""
-        return pow(ServerHalfKey, privateNumber)% modularWord
+        return pow(ServerHalfKey, privateNumber,modularWord)

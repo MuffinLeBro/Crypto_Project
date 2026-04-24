@@ -21,6 +21,9 @@ class MainWindow (QMainWindow):
         self.client.connect("vlbelintrocrypto.hevs.ch", 6000)
         self.client.start_receiving(self.on_message_received)
 
+        #init valeur pour le dh
+        self.privateNumber = 0
+
         #Init Button
         self.btnRSA = self.findChild(QPushButton, 'btnRSA')
         self.btnDifHel = self.findChild(QPushButton, 'btnDiffieHellman')
@@ -63,7 +66,7 @@ class MainWindow (QMainWindow):
         self.btnClear.clicked.connect(self.btnClear_Clicked)
         self.btnDecode.clicked.connect(self.btnDecode_Clicked)
         self.btnSendSecret.clicked.connect(self.btnSendSecret_clicked)
-
+        self.btnKeyFind.clicked.connect(self.btnKeyFind_Clicked)
 
     def on_message_received(self, message):
         self.txtServerBox.appendPlainText(message.decode("utf-32-be") + "\n\n")
@@ -99,6 +102,22 @@ class MainWindow (QMainWindow):
         else:
             self.txtLog.toPlainText("La clé privée ou la clé publique doit être un entier")
 
+    def btnKeyFind_Clicked(self):
+        modulo_str = self.txtModulo.toPlainText()
+        publicKey_str = self.txtPublicKey.toPlainText()
+        modulo = int(modulo_str)
+        publicKey = int(publicKey_str)
+
+        self.client.send(self.handler.build_message('s',f"{modulo_str},{publicKey_str}"))
+
+    def btnDecode_Clicked(self):
+        messageEncrypt = self.txtMessage.toPlainText()
+        modulo_str = self.txtModulo.toPlainText()
+        privateKey_str = self.txtPrivateKey.toPlainText()
+        modulo = int(modulo_str)
+        privateKey = int(privateKey_str)
+        res = Command.decode_rsa(messageEncrypt, privateKey, modulo)
+        self.txtSolution.setPlainText(res)
 
     def btnDifHel_Clicked(self): 
         # envoi du generator et du modulo
@@ -109,7 +128,7 @@ class MainWindow (QMainWindow):
         self.client.send(self.handler.build_message('s', params))
 
         # calcul de la haflkey
-        halfKey, privateNumber = self.dh.halfkey(modularWord,generator)
+        halfKey, self.privateNumber = self.dh.halfkey(modularWord,generator)
         self.txtMyHalfKey.setPlainText(str(halfKey))
         self.client.send(self.handler.build_message('s', str(halfKey)))
 
@@ -121,14 +140,11 @@ class MainWindow (QMainWindow):
         modularWord = int(parts[0])
         generator = int(parts[1])
 
-        # calcul de la haflkey
-        halfKey, privateNumber = self.dh.halfkey(modularWord,generator)
-
         serverHalfKey_str = self.txtServerHalfKey.toPlainText()
         serverHalfKey = int(serverHalfKey_str)
 
         #Envoi du sharedSecret
-        sharedSecret = self.dh.secret(modularWord, generator, privateNumber, serverHalfKey)
+        sharedSecret = self.dh.secret(modularWord, generator, self.privateNumber, serverHalfKey)
         self.txtSharedSecret.setPlainText(str(sharedSecret))
         self.client.send(self.handler.build_message('s', str(sharedSecret)))
 
@@ -156,11 +172,6 @@ class MainWindow (QMainWindow):
             msgType = 't'         
 
         self.client.send(self.handler.build_message(msgType, message))
-
-
-    def btnDecode_Clicked(self):
-      ...           
-
 
     def btnClear_Clicked(self):
         self.txtServerBox.clear()
